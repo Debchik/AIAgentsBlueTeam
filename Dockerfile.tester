@@ -7,9 +7,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY requirements.lock ./requirements.lock
+COPY vendor/wheels312/ /wheels/
 RUN python -m pip install \
     --disable-pip-version-check \
     --no-cache-dir \
+    --no-index \
+    --find-links=/wheels \
     --requirement requirements.lock \
     && groupadd --gid 10001 app \
     && useradd \
