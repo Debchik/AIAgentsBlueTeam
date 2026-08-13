@@ -6,7 +6,7 @@ from collections.abc import Sequence
 
 from common import GuardrailDecision, GuardrailRequest
 from guardrail.detectors import Detector, OrderedKeywordDetector, Signal
-from guardrail.ngram_defense import classify_ngram_fallback
+from guardrail.hidden_fallback import classify_hidden_fallback
 from guardrail.normalization import normalize_text
 from guardrail.policy import StarterPolicy
 from guardrail.semantic_defense import classify_request_semantic
@@ -42,7 +42,7 @@ class StarterGuardrail:
                 if signal is None:
                     signal = classify_separator_obfuscation(request)
                 if signal is None:
-                    signal = classify_ngram_fallback(request)
+                    signal = classify_hidden_fallback(request)
             signals = () if signal is None else (signal,)
             return self._policy.decide(signals, request.context.route)
 
