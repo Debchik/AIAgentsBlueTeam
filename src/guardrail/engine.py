@@ -6,6 +6,7 @@ from collections.abc import Sequence
 
 from common import GuardrailDecision, GuardrailRequest
 from guardrail.detectors import Detector, OrderedKeywordDetector, Signal
+from guardrail.evidence_fallback import classify_evidence_fallback
 from guardrail.hidden_fallback import classify_hidden_fallback
 from guardrail.normalization import normalize_text
 from guardrail.policy import StarterPolicy
@@ -39,6 +40,8 @@ class StarterGuardrail:
             signal = None
             if not is_high_confidence_utility(request):
                 signal = classify_request_semantic(request)
+                if signal is None:
+                    signal = classify_evidence_fallback(request)
                 if signal is None:
                     signal = classify_separator_obfuscation(request)
                 if signal is None:
