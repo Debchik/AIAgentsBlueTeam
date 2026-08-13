@@ -11,6 +11,7 @@ from guardrail.normalization import normalize_text
 from guardrail.policy import StarterPolicy
 from guardrail.semantic_defense import classify_request_semantic
 from guardrail.separator_defense import classify_separator_obfuscation
+from guardrail.utility_defense import is_high_confidence_utility
 from guardrail.vector_detector import create_starter_prototype_detector
 
 
@@ -35,11 +36,13 @@ class StarterGuardrail:
 
     def check(self, request: GuardrailRequest) -> GuardrailDecision:
         if self._uses_default_pipeline:
-            signal = classify_request_semantic(request)
-            if signal is None:
-                signal = classify_separator_obfuscation(request)
-            if signal is None:
-                signal = classify_ngram_fallback(request)
+            signal = None
+            if not is_high_confidence_utility(request):
+                signal = classify_request_semantic(request)
+                if signal is None:
+                    signal = classify_separator_obfuscation(request)
+                if signal is None:
+                    signal = classify_ngram_fallback(request)
             signals = () if signal is None else (signal,)
             return self._policy.decide(signals, request.context.route)
 
