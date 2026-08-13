@@ -5,10 +5,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from common import GuardrailDecision, GuardrailRequest
-from guardrail.defense import classify_request
 from guardrail.detectors import Detector, OrderedKeywordDetector, Signal
 from guardrail.normalization import normalize_text
 from guardrail.policy import StarterPolicy
+from guardrail.semantic_defense import classify_request_semantic
 from guardrail.vector_detector import create_starter_prototype_detector
 
 
@@ -33,7 +33,7 @@ class StarterGuardrail:
 
     def check(self, request: GuardrailRequest) -> GuardrailDecision:
         if self._uses_default_pipeline:
-            signal = classify_request(request)
+            signal = classify_request_semantic(request)
             signals = () if signal is None else (signal,)
             return self._policy.decide(signals, request.context.route)
 
